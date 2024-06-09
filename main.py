@@ -1,14 +1,9 @@
 #Cargado de datos
-import csv
-import chardet
 import pandas as pd
-import numpy as np
-import io
-from sklearn.pipeline import Pipeline
-from sklearn import preprocessing
-from sklearn.base import TransformerMixin
-from sklearn.preprocessing import RobustScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 archivo = "C:/Users/aldha/Documents/Datos_SI_Normalizado.xlsx" #Realizar el cambio según su PC
 
@@ -22,3 +17,11 @@ df.head(14000)
 df.tail()
 #Revisamos la información del archivo .csv
 df.info()
+
+#Eliminamos las columnas con valores Nan en el .csv
+data_clean = df.dropna()
+
+#Estandarizamos los datos para poder utilizarlos en el algoritmo K-Means
+scaler = StandardScaler()
+data_scaled = scaler.fit_transform(data_clean[columns])
+
