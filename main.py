@@ -23,5 +23,11 @@ data_clean = df.dropna()
 
 #Estandarizamos los datos para poder utilizarlos en el algoritmo K-Means
 scaler = StandardScaler()
-data_scaled = scaler.fit_transform(data_clean[columns])
+data_scaled = scaler.fit_transform(data_clean[columnas_a_leer])
 
+#Determinamos el número óptimo de clusters usando el método del codo
+sse = []
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(data_scaled)
+    sse.append(kmeans.inertia_)
