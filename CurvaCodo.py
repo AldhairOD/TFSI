@@ -20,3 +20,8 @@ def curva(archivo, columnas, df):
     plt.ylabel('Distorsión')
     plt.title('Método del Codo para encontrar el k óptimo')
     plt.show()
+
+def realizar_clustering(df, num_clusters):
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    df['cluster'] = kmeans.fit_predict(df)
+    return df, kmeans
