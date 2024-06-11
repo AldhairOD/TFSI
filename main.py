@@ -16,4 +16,22 @@ df = pd.read_excel(archivo, usecols=columnas_a_leer)
 #Eliminamos las columnas con valores Nan en el .csv
 df = df.dropna()
 
+# Realizar la normalización de los datos
+scaler = StandardScaler()
+df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+
+# Mostrar la curva del codo para seleccionar el número óptimo de clusters
 cc.curva(archivo, columnas_a_leer, df)
+
+# Realizar el clustering con un número determinado de clusters
+num_clusters = 3  # Ajustar según el resultado de la curva del codo
+df_clustered, kmeans_model = cc.realizar_clustering(df_scaled, num_clusters)
+
+# Visualizar los clusters
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=df_clustered, x='MONTO_PIA', y='MONTO_PIM', hue='cluster', palette='viridis')
+plt.title(f'Clustering de datos con KMeans (k={num_clusters})')
+plt.xlabel('MONTO_PIA')
+plt.ylabel('MONTO_PIM')
+plt.legend(title='Cluster')
+plt.show()
