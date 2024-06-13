@@ -1,6 +1,4 @@
-Para poder ejecutar normalizacion.py 
-Ejecutar lo siguiente en el terminal:
-pip install openpyxl
-pip install scikit-learn
-pip install pandas
+Enlace a repositorio git hub:
+https://github.com/AldhairOD/TFSI
+Ejecutar el archivo Requirementes.txt 
 
