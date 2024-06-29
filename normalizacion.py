@@ -22,6 +22,8 @@ columns_to_normalize = [
 missing_columns = [col for col in columns_to_normalize if col not in df.columns]
 if missing_columns:
     raise ValueError(f"Las siguientes columnas no se encontraron en el archivo: {missing_columns}")
+#eliminamos las columnas restantes no deseadas
+df = df[columns_to_normalize]
 
 # Inicializar el escalador MinMaxScaler
 scaler = MinMaxScaler()
