@@ -85,9 +85,6 @@ def apply_pca_and_plot(data, n_components=2):
     return df_pca
 
 # Aplicar PCA y reducir dimensionalidad
-# Asegúrate de que data_filtered tenga al menos 3 dimensiones antes de reducir a 2
-# Si solo tienes dos columnas, agrega una columna adicional para la reducción de 3 a 2 dimensiones.
-# Aquí se simula una tercera característica para demostración:
 data_filtered['MONTO_TOTAL'] = data_filtered['MONTO_CERTIFICADO'] + data_filtered['MONTO_DEVENGADO']
 
 # Reducir de 3 a 2 dimensiones
