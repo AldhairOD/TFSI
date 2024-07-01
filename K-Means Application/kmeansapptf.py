@@ -16,6 +16,7 @@ from sklearn.cluster import KMeans
 from sklearn.cluster import SpectralClustering
 from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score, homogeneity_score, completeness_score, v_measure_score, adjusted_rand_score
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -55,10 +56,47 @@ data_filtered.dropna(inplace=True)
 print("Datos filtrados y limpios:")
 print(data_filtered.describe())
 
-"""Aplicar K-Means"""
+"""PCA y reducir dimensionalidad"""
 
-# Aplicar K-Means
-# Determinar el número óptimo de clusters usando el método del codo
+def apply_pca_and_plot(data, n_components=2):
+    # Asegurarse de que los datos no tengan valores faltantes
+    data = data.dropna()
+
+    # Estándarizar los datos
+    scaler = StandardScaler()
+    data_scaled = scaler.fit_transform(data)
+
+    # Aplicar PCA
+    pca = PCA(n_components=n_components)
+    data_pca = pca.fit_transform(data_scaled)
+
+    # Crear un DataFrame con los resultados
+    df_pca = pd.DataFrame(data_pca, columns=[f'PC{i+1}' for i in range(n_components)])
+
+    # Visualizar los resultados
+    plt.figure(figsize=(10, 6))
+    plt.scatter(df_pca['PC1'], df_pca['PC2'], c='blue', edgecolor='k', s=50)
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+    plt.title('PCA: 3D to 2D')
+    plt.grid(True)
+    plt.show()
+
+    return df_pca
+
+# Aplicar PCA y reducir dimensionalidad
+# Asegúrate de que data_filtered tenga al menos 3 dimensiones antes de reducir a 2
+# Si solo tienes dos columnas, agrega una columna adicional para la reducción de 3 a 2 dimensiones.
+# Aquí se simula una tercera característica para demostración:
+data_filtered['MONTO_TOTAL'] = data_filtered['MONTO_CERTIFICADO'] + data_filtered['MONTO_DEVENGADO']
+
+# Reducir de 3 a 2 dimensiones
+df_pca = apply_pca_and_plot(data_filtered[['MONTO_CERTIFICADO', 'MONTO_DEVENGADO', 'MONTO_TOTAL']])
+print(df_pca)
+
+"""Aplicar K-Means con datos reducidos"""
+
+# Aplicar K-Means en los datos reducidos dimensionalmente
 def plot_elbow_method(data, max_clusters=10):
     distortions = []
     for i in range(1, max_clusters+1):
@@ -74,49 +112,49 @@ def plot_elbow_method(data, max_clusters=10):
     plt.grid(True)
     plt.show()
 
-plot_elbow_method(data_filtered)
+# Determinar el número óptimo de clusters usando el método del codo
+plot_elbow_method(df_pca)
+
+"""Elegir numero de clusters"""
 
 # Elegir el número óptimo de clusters 3
 kmeans = KMeans(n_clusters=3, random_state=0)
-data_filtered['Cluster'] = kmeans.fit_predict(data_filtered)
+df_pca['Cluster'] = kmeans.fit_predict(df_pca)
 
 print("Datos con clusters asignados:")
-print(data_filtered.head())
+print(df_pca.head())
 
-"""Visualizacion de k-means y analisis"""
+"""Visualizacion de clustering con kmeans"""
 
-# Visualización y análisis
-# Visualización de los clusters
 plt.figure(figsize=(10, 6))
-plt.scatter(data_filtered['MONTO_CERTIFICADO'], data_filtered['MONTO_DEVENGADO'], c=data_filtered['Cluster'], cmap='viridis')
-plt.xlabel('Monto Certificado')
-plt.ylabel('Monto Devengado')
+plt.scatter(df_pca['PC1'], df_pca['PC2'], c=df_pca['Cluster'], cmap='viridis')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
 plt.title('Patrones de Inversión del Gobierno durante la Pandemia (K-Means Clustering)')
 plt.colorbar(label='Cluster')
 plt.grid(True)
 plt.show()
 
-"""Analisis descriptivo por cluster"""
+"""Analisis descriptivo de cluster"""
 
 # Análisis descriptivo por cluster
-cluster_analysis = data_filtered.groupby('Cluster').mean()
+cluster_analysis = df_pca.groupby('Cluster').mean()
 print("Análisis descriptivo por cluster:")
 print(cluster_analysis)
 
 """Evaluacion de modelo"""
 
-# Evaluación del modelo
 # Métricas de evaluación sin etiquetas verdaderas
-silhouette_avg = silhouette_score(data_filtered[['MONTO_CERTIFICADO', 'MONTO_DEVENGADO']], data_filtered['Cluster'])
+silhouette_avg = silhouette_score(df_pca[['PC1', 'PC2']], df_pca['Cluster'])
 print(f"Índice de Silueta: {silhouette_avg:.3f}")
 
-# Para métricas que requieren etiquetas verdaderas, simulamos etiquetas verdaderas
-true_labels = np.random.randint(0, 3, len(data_filtered))
+# Simulamos etiquetas verdaderas para calcular métricas que requieren etiquetas verdaderas
+true_labels = np.random.randint(0, 3, len(df_pca))
 
 # Calcular métricas que requieren etiquetas verdaderas
-homogeneity = homogeneity_score(true_labels, data_filtered['Cluster'])
-completeness = completeness_score(true_labels, data_filtered['Cluster'])
-v_measure = v_measure_score(true_labels, data_filtered['Cluster'])
+homogeneity = homogeneity_score(true_labels, df_pca['Cluster'])
+completeness = completeness_score(true_labels, df_pca['Cluster'])
+v_measure = v_measure_score(true_labels, df_pca['Cluster'])
 
 print(f"Homogeneidad: {homogeneity:.3f}")
 print(f"Completeness: {completeness:.3f}")
