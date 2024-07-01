@@ -76,7 +76,7 @@ def plot_elbow_method(data, max_clusters=10):
 
 plot_elbow_method(data_filtered)
 
-# Elegir el número óptimo de clusters (por ejemplo, 3)
+# Elegir el número óptimo de clusters 3
 kmeans = KMeans(n_clusters=3, random_state=0)
 data_filtered['Cluster'] = kmeans.fit_predict(data_filtered)
 
@@ -85,7 +85,7 @@ print(data_filtered.head())
 
 """Visualizacion de k-means y analisis"""
 
-# Paso 4: Visualización y análisis
+# Visualización y análisis
 # Visualización de los clusters
 plt.figure(figsize=(10, 6))
 plt.scatter(data_filtered['MONTO_CERTIFICADO'], data_filtered['MONTO_DEVENGADO'], c=data_filtered['Cluster'], cmap='viridis')
@@ -102,3 +102,26 @@ plt.show()
 cluster_analysis = data_filtered.groupby('Cluster').mean()
 print("Análisis descriptivo por cluster:")
 print(cluster_analysis)
+
+"""Evaluacion de modelo"""
+
+# Evaluación del modelo
+# Métricas de evaluación sin etiquetas verdaderas
+silhouette_avg = silhouette_score(data_filtered[['MONTO_CERTIFICADO', 'MONTO_DEVENGADO']], data_filtered['Cluster'])
+print(f"Índice de Silueta: {silhouette_avg:.3f}")
+
+# Para métricas que requieren etiquetas verdaderas, simulamos etiquetas verdaderas
+true_labels = np.random.randint(0, 3, len(data_filtered))
+
+# Calcular métricas que requieren etiquetas verdaderas
+homogeneity = homogeneity_score(true_labels, data_filtered['Cluster'])
+completeness = completeness_score(true_labels, data_filtered['Cluster'])
+v_measure = v_measure_score(true_labels, data_filtered['Cluster'])
+
+print(f"Homogeneidad: {homogeneity:.3f}")
+print(f"Completeness: {completeness:.3f}")
+print(f"V-Measure: {v_measure:.3f}")
+
+# Calcular inercia
+inertia = kmeans.inertia_
+print(f"Inercia (Suma de Cuadrados Dentro del Cluster): {inertia:.3f}")
