@@ -39,3 +39,46 @@ print(data.head())
 
 print("\nDiccionario de datos:")
 print(diccionario.head())
+
+"""Filtrado de datos"""
+
+# Filtrar columnas relevantes
+data_filtered = data[['MONTO_CERTIFICADO', 'MONTO_DEVENGADO']]
+
+# Convertir a numérico y manejar valores faltantes
+data_filtered['MONTO_CERTIFICADO'] = pd.to_numeric(data_filtered['MONTO_CERTIFICADO'], errors='coerce')
+data_filtered['MONTO_DEVENGADO'] = pd.to_numeric(data_filtered['MONTO_DEVENGADO'], errors='coerce')
+
+# Eliminar filas con valores faltantes
+data_filtered.dropna(inplace=True)
+
+print("Datos filtrados y limpios:")
+print(data_filtered.describe())
+
+"""Aplicar K-Means"""
+
+# Aplicar K-Means
+# Determinar el número óptimo de clusters usando el método del codo
+def plot_elbow_method(data, max_clusters=10):
+    distortions = []
+    for i in range(1, max_clusters+1):
+        kmeans = KMeans(n_clusters=i, random_state=0)
+        kmeans.fit(data)
+        distortions.append(kmeans.inertia_)
+
+    plt.figure(figsize=(8, 4))
+    plt.plot(range(1, max_clusters+1), distortions, marker='o')
+    plt.xlabel('Número de clusters')
+    plt.ylabel('Distorsión')
+    plt.title('Método del codo para determinar el número óptimo de clusters')
+    plt.grid(True)
+    plt.show()
+
+plot_elbow_method(data_filtered)
+
+# Elegir el número óptimo de clusters (por ejemplo, 3)
+kmeans = KMeans(n_clusters=3, random_state=0)
+data_filtered['Cluster'] = kmeans.fit_predict(data_filtered)
+
+print("Datos con clusters asignados:")
+print(data_filtered.head())
