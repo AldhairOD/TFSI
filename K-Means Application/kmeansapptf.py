@@ -16,21 +16,24 @@ from sklearn.cluster import KMeans
 from sklearn.cluster import SpectralClustering
 from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score, homogeneity_score, completeness_score, v_measure_score, adjusted_rand_score
+from google.colab import files
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+"""Aca subir el archivo 2020-gastos-covid-19"""
+
+upload = files.upload()
+
+"""Aca subir el archivo diccionario de gastos"""
+
+upload2 = files.upload()
+
 """Lectura de archivos CSV"""
 
 # Leer los archivos CSV
-data_path = '/content/drive/MyDrive/2020-Gasto-COVID-19.csv'
-dic_path = '/content/drive/MyDrive/Gasto_COVID_19_Diccionario.csv'
-
-# Leer el conjunto de datos principal
-data = pd.read_csv(data_path, encoding='latin1')
-
-# Leer el diccionario de datos
-diccionario = pd.read_csv(dic_path, encoding='latin1')
+data = pd.read_csv(next(iter(upload)))
+diccionario = pd.read_csv(next(iter(upload2)))
 
 """Inspeccionamiento de datos y diccionario de datos"""
 
@@ -85,6 +88,7 @@ def apply_pca_and_plot(data, n_components=2):
     return df_pca
 
 # Aplicar PCA y reducir dimensionalidad
+# Aquí se simula una tercera característica para demostración:
 data_filtered['MONTO_TOTAL'] = data_filtered['MONTO_CERTIFICADO'] + data_filtered['MONTO_DEVENGADO']
 
 # Reducir de 3 a 2 dimensiones
@@ -125,8 +129,8 @@ print(df_pca.head())
 
 plt.figure(figsize=(10, 6))
 plt.scatter(df_pca['PC1'], df_pca['PC2'], c=df_pca['Cluster'], cmap='viridis')
-plt.xlabel('Principal Component 1')
-plt.ylabel('Principal Component 2')
+plt.xlabel('MONTO CERTIFICADO')
+plt.ylabel('MONTO DEVENGADO')
 plt.title('Patrones de Inversión del Gobierno durante la Pandemia (K-Means Clustering)')
 plt.colorbar(label='Cluster')
 plt.grid(True)
