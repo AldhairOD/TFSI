@@ -82,3 +82,23 @@ data_filtered['Cluster'] = kmeans.fit_predict(data_filtered)
 
 print("Datos con clusters asignados:")
 print(data_filtered.head())
+
+"""Visualizacion de k-means y analisis"""
+
+# Paso 4: Visualización y análisis
+# Visualización de los clusters
+plt.figure(figsize=(10, 6))
+plt.scatter(data_filtered['MONTO_CERTIFICADO'], data_filtered['MONTO_DEVENGADO'], c=data_filtered['Cluster'], cmap='viridis')
+plt.xlabel('Monto Certificado')
+plt.ylabel('Monto Devengado')
+plt.title('Patrones de Inversión del Gobierno durante la Pandemia (K-Means Clustering)')
+plt.colorbar(label='Cluster')
+plt.grid(True)
+plt.show()
+
+"""Analisis descriptivo por cluster"""
+
+# Análisis descriptivo por cluster
+cluster_analysis = data_filtered.groupby('Cluster').mean()
+print("Análisis descriptivo por cluster:")
+print(cluster_analysis)
